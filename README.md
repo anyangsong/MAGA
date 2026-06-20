@@ -2,7 +2,7 @@
     <img src="imgs/MAGA.png" width="50%"> <br>
 </p>
 <p align="center">
-<a href="https://github.com/s1012480564/MAGA/blob/main/LICENSE">
+<a href="https://github.com/anyangsong/MAGA/blob/main/LICENSE">
 <img src="https://img.shields.io/badge/License-MIT-blue"/></a>
 <a href="https://www.arxiv.org/abs/2601.04633">
 <img src="https://img.shields.io/badge/paper-arXiv-b31b1b"></a>
@@ -16,7 +16,7 @@
 
 ## Introduction
 
-Large Language Models (LLMs) alignment is constantly evolving. Machine-Generated Text (MGT) is becoming increasingly difficult to distinguish from Human-Written Text (HWT). This has exacerbated abuse issues such as fake news and online fraud. Fine-tuned detectors' generalization ability is highly dependent on dataset quality, and simply expanding the sources of MGT is insufficient. Further augment of generation process is required. According to HC-Var's theory, enhancing the alignment of generated text can not only facilitate attacks on existing detectors to test their robustness, but also help improve the generalization ability of detectors fine-tuned on it. Therefore, we propose **M**achine-**A**ugment-**G**enerated Text via **A**lignment (MAGA). MAGA pipeline enables comprehensive alignment from prompt construction optimization, to RL adversarial fine-tuning (Reinforced Learning from Detectors Feedback - Cross Model&Domain, RLDF-CMD) and to inference process optimization. MAGA successfully circumvents existing detectors, and at the same time, the RoBERTa detector fine-tuned on the MAGA training set delivers improved generalization detection performance on multiple well-known external datasets. We expect MAGA to provide indicative significance for future research on the generalization detection ability of detectors.
+Machine-Generated Text (MGT) is becoming increasingly difficult to distinguish from Human-Written Text (HWT). This trend has exacerbated malicious activities such as fake news and online fraud. The generalization ability of fine-tuned detectors relies heavily on dataset quality, and simply expanding the sources of MGT may become increasingly insufficient. Further augmentation of the generation process is required. Based on HC-Var's theory, enhancing the human-like alignment of MGT not only facilitates robustness testing of existing detectors but also boosts the generalization ability of detectors fine-tuned on such aligned MGT datasets. Therefore, we propose the **M**achine-**A**gment-**G**enerated Text via **A**lignment (MAGA) Detection Benchmark. MAGA integrates several alignment methods, ranging from prompt construction to **G**enerator-**D**etector **A**dversarial **R**einforcement **L**earning (GDARL) and the reasoning process. In our experiments, the RoBERTa detector fine-tuned on MAGA achieves an average improvement of 4.60\% in generalization AUC. Conversely, the aligned MGTs in MAGA also lead to an average decrease of 8.13\% in the AUC of selected detectors. We hope the MAGA Benchmark will provide valuable insights for future research on the generalization ability of MGT detectors.
 <p align="center">
     <img src="imgs/MAGA_introduction.png" width="50%"> <br>
 </p>
@@ -29,7 +29,7 @@ The MAGA dataset contains nearly 1 million generations from 12 Generators, 20 Do
 | ----------------------- | ------------------------------------------------------------ |
 | **Generators**          | GPT-4o-mini, Gemini-2.0-flash, DeepSeek-V3, Qwen3-plus, Mistral-Medium, Hunyuan-TurboS, Llama-3.1-8B-Instruct, gemma-3-12b-it, DeepSeek-R1-0528-Qwen3-8B, Qwen3-8B, Ministral-8B-Instruct-2410, Hunyuan-7B-Instruct |
 | **Domains**             | **English:** Reddit, S2ORC, Wikipedia, wikiHow, Trustpilot Reviews, Amazon Reviews, Yahoo Answers, Natural Questions, CC News, NPR News;<br />**Chinese:** Baidu Tieba, Weibo Review, Rednote Review, CSL, Baidu Baike, Dianping, Douban Review, Baidu Zhidao, Zhihu, CLTS |
-| **Alignment Methods**   | BPO, Roleplaying, Self-Refine, RLDF-CMD (fully-fused MAGA integrates these four methods) |
+| **Alignment Methods**   | BPO, Roleplaying, Self-Refine, GDARL-CDMMR (the fully-enhanced MAGA split integrates these four methods) |
 | **Decoding Strategies** | Assign different values to each generator. For open-source models, use the values specified in the official `generation_config.json` file. For closed-source models, adopt the recommended values from the official `Technical Report`; if the values are unknown, use the default values of vllm. See our paper for details. |
 
 ### Comparison
@@ -63,12 +63,12 @@ MAGA/
 └── extra/
     ├── train/
     │   ├── MAGA_extra_train_BPO.jsonl
-    │   ├── MAGA_extra_train_RLDF_CMD.jsonl
+    │   ├── MAGA_extra_train_GDARL_CDMMR.jsonl
     │   ├── MAGA_extra_train_role_playing.jsonl
     │   └── MAGA_extra_train_self_refine.jsonl
     └── val/
         ├── MAGA_extra_val_BPO.jsonl
-        ├── MAGA_extra_val_RLDF_CMD.jsonl
+        ├── MAGA_extra_val_GDARL_CDMMR.jsonl
         ├── MAGA_extra_val_role_playing.jsonl
         └── MAGA_extra_val_self_refine.jsonl
 MAGA-cn/
@@ -81,17 +81,17 @@ MAGA-cn/
 └── extra/
     ├── train/
     │   ├── MAGA-cn_extra_train_BPO.jsonl
-    │   ├── MAGA-cn_extra_train_RLDF_CMD.jsonl
+    │   ├── MAGA-cn_extra_train_GDARL_CDMMR.jsonl
     │   ├── MAGA-cn_extra_train_role_playing.jsonl
     │   └── MAGA-cn_extra_train_self_refine.jsonl
     └── val/
         ├── MAGA-cn_extra_val_BPO.jsonl
-        ├── MAGA-cn_extra_val_RLDF_CMD.jsonl
+        ├── MAGA-cn_extra_val_GDARL_CDMMR.jsonl
         ├── MAGA-cn_extra_val_role_playing.jsonl
         └── MAGA-cn_extra_val_self_refine.jsonl
 ```
 
-The MAGA (full MAGA dataset) consists of two subsets: MAGA (English version) and MAGA-cn, with each subset containing 6 splits. For example, MAGA (English version) comprises 6 splits: MGB (baseline without alignment), MAGA (the fully-fused MAGA with 4 alignment methods), and four separate MAGA-extra-\<alignment method\> splits corresponding to each of the 4 alignment methods respectively. The same applies to MAGA-cn. Each split is further divided into two subsplits: train and validation. It should be noted that for cross-sectional comparison, the source human text used for each split is identical. In particular, for RLDF-CMD, the part generated by commercial models is directly extracted entirely from MGB. The specific statistical distribution of the number of entries is as follows:
+The MAGA (full MAGA dataset) consists of two subsets: MAGA (English version) and MAGA-cn, with each subset containing 6 splits. For example, MAGA (English version) comprises 6 splits: MGB (baseline without alignment), MAGA (the fully-enhanced MAGA with 4 alignment methods), and four separate MAGA-extra-\<alignment method\> splits corresponding to each of the 4 alignment methods respectively. The same applies to MAGA-cn. Each split is further divided into two subsplits: train and validation. It should be noted that for cross-sectional comparison, the source human text used for each split is identical. In particular, for GDARL-CDMMR, the part generated by commercial models is directly extracted entirely from MGB. The specific statistical distribution of the number of entries is as follows:
 
 <p align="center">
     <img src="imgs/statistics.png" width="100%"> <br>
@@ -103,7 +103,7 @@ Each JSONL record contains the following fields:
 - `text`: The content of the text (HWT&MGT)
 - `domain`: The genre from where the prompt/text was taken (e.g. Reddit)
 - `human_source_id`: uuid4 of the human-written source text
-- `prompt_id`: A uuid4 that uniquely identifies the prompt used
+- `prompt_id`: A uuid4 that uniquely identifies the prompt used (system prompt + user prompt, but excluding the prompt used during self-refine)
 - `system_prompt`: The system prompt used for generation
 - `user_prompt`: The user prompt used for generation
 - `model`: The Large Language Model that generated the text
@@ -127,7 +127,7 @@ The labels used during our training are defined as follows: HWT is assigned a la
 
 1. Clone the repository and enter the folder.
    ```bash
-   git clone https://github.com/s1012480564/MAGA.git
+   git clone https://github.com/anyangsong/MAGA.git
    cd MAGA
    ```
 
@@ -271,7 +271,7 @@ The default value of batch_size is None, which means the entire dataset is treat
 
    Note: In practice, BPO has two optimization modes (stable, aggressive). To ensure stability, we adopt the stable mode, which results in approximately half of the prompts not being optimized.
 
-5. Now you can perform generation for each model individually. MAGA's generate_offline.py/generate_online.py will filter based on annotations, ensuring the input model only generates the outputs assigned to it. You can enable the self-refine parameter to execute self-refine (fully-fused MAGA = BPO + roleplaying + RLDF-CMD + self-refine). During generation, considering the primary task is writing, for models with mixed think/no_think modes (e.g., Qwen3-8B), we use the no_think mode uniformly. For generation with fast think (/no_think) or only think (deepseek-r1), we remove the chain-of-thought content. All these processes are automatically executed in our generate Python scripts.
+5. Now you can perform generation for each model individually. MAGA's generate_offline.py/generate_online.py will filter based on annotations, ensuring the input model only generates the outputs assigned to it. You can enable the self-refine parameter to execute self-refine (fully-enhanced MAGA = BPO + roleplaying + GDARL-CDMMR + self-refine). During generation, considering the primary task is writing, for models with mixed think/no_think modes (e.g., Qwen3-8B), we use the no_think mode uniformly. For generation with fast think (/no_think) or only think (deepseek-r1), we remove the chain-of-thought content. All these processes are automatically executed in our generate Python scripts.
 
    Example:
 
