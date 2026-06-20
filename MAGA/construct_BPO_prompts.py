@@ -9,6 +9,7 @@ import os
 import argparse
 from datasets import load_dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
+from uuid import uuid4
 
 MAGA_ADDITIONAL_INSTRUCTION = {
     "Reddit": " Do not repeat the title.",
@@ -56,6 +57,7 @@ def process(examples: dict[str, list], model, tokenizer) -> dict[str, list]:
             bpo_responses[i] = response + MAGA_ADDITIONAL_INSTRUCTION[domains[i]]
 
     examples["user_prompt"] = bpo_responses
+    examples["prompt_id"] = [str(uuid4()) for _ in range(len(examples["user_prompt"]))]
     return examples
 
 

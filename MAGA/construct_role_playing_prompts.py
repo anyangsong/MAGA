@@ -2,6 +2,7 @@ import os
 import argparse
 import random
 from datasets import load_dataset
+from uuid import uuid4
 
 
 def parse_arguments():
@@ -16,6 +17,7 @@ def parse_arguments():
 def process(examples: dict[str, list], role_prompts: list[str]) -> dict[str, list]:
     length = len(examples["system_prompt"])
     system_prompts = [random.choice(role_prompts) for _ in range(length)]
+    examples["prompt_id"] = [str(uuid4()) for _ in range(length)]
     examples["system_prompt"] = system_prompts
     return examples
 
